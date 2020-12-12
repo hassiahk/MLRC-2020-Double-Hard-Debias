@@ -1,3 +1,6 @@
 # Reproducibility results of Double-Hard Debias
 
 In this repo, we tried to reproduce the results claimed in [Double-Hard Debias: Tailoring Word Embeddings for Gender Bias Mitigation (ACL 2020)](https://arxiv.org/abs/2005.00965) as part of Reproducibility Challenge 2020 hosted by [PaperswithCode](https://paperswithcode.com/)
+
+## Abstract
+> Word embeddings derived from human-generated corpora inherit strong gender bias which can be further amplified by downstream models. Some commonly adopted debiasing approaches, including the seminal Hard Debias algorithm, apply post-processing procedures that project pre-trained word embeddings into a subspace orthogonal to an inferred gender subspace. We discover that semantic-agnostic corpus regularities such as word frequency captured by the word embeddings negatively impact the performance of these algorithms. We propose a simple but effective technique, Double Hard Debias, which purifies the word embeddings against such corpus regularities prior to inferring and removing the gender subspace. Experiments on three bias mitigation benchmarks show that our approach preserves the distributional semantics of the pre-trained word embeddings while reducing gender bias to a significantly larger degree than prior approaches.
