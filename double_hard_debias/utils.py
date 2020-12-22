@@ -1,9 +1,10 @@
 import string
-from typing import Tuple, Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+
 import numpy as np
 import scipy.spatial
-from tqdm import tqdm
 from sklearn.decomposition import PCA
+from tqdm import tqdm
 
 __all__ = [
     "load_glove_txt",
@@ -130,7 +131,7 @@ def compute_bias_by_projection(
         vocab: Vocabulary.
     """
 
-    gender_bias: dict = {}
+    gender_bias: Dict[str, float] = {}
 
     for word in vocab:
         vector = word_vec[word2idx[word]]
@@ -173,7 +174,7 @@ def perform_pca(pairs, word_vec, word2idx) -> PCA:
     matrix = np.array(matrix)
     pca = PCA()
     pca.fit(matrix)
-    print(f"Pairs used in PCA: {cnt}")
+    print(f"Pairs used in PCA: {cnt}", end=', ')
     return pca
 
 
