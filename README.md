@@ -18,7 +18,7 @@ from training corpora. [Bolukbasi et al. (2016)](https://arxiv.org/abs/1607.0652
 ### Installation
 Clone the repo:
 ```bash
-git clone https://github.com/uvavision/Double-Hard-Debias.git
+git clone https://github.com/hassiahk/Double-Hard-Debias.git
 ```
 Install the dependencies:
 ```bash
