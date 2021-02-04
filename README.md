@@ -12,8 +12,8 @@ from training corpora. [Bolukbasi et al. (2016)](https://arxiv.org/abs/1607.0652
 ## Usage
 
 ### Requirements
-- Python >= 3.6.
-- Word Embeddings Benchmarks. Install them following the instructions [here](https://github.com/kudkudak/word-embeddings-benchmarks).
+- `Python >= 3.6`.
+- `Word Embeddings Benchmarks`. Install them following the instructions [here](https://github.com/kudkudak/word-embeddings-benchmarks).
 
 ### Installation
 Clone the repo:
@@ -24,8 +24,7 @@ Install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-
-To run in develop mode:
+To run in develop mode, this is needed if you are just running our notebooks without changing anything:
 ```bash
 python setup.py develop
 ```
@@ -38,7 +37,9 @@ python setup.py develop
 - You can find all the external data used in the repo [here](https://drive.google.com/drive/folders/1ZCF075LCwW6Lq2Y-G9LXhCYqudaXfPRC).
 
 ### Double-Hard Debias
-You can find the detailed steps to implement `Double-Hard Debias` in [GloVe_Double_Hard_Debias.ipynb](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Double_Hard_Debias.ipynb). (`PyPi` package coming soon)
+You can find the detailed step by step procedure to implement `Double-Hard Debias` in [`GloVe_Double_Hard_Debias.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Double_Hard_Debias.ipynb). (`PyPi` package coming soon)
 
-### Evaluation
-- 
+### Reproducibility Results
+- In [`Normalized_Unnormalized_GloVe_Evaluate.ipynb`](), we experimented with both normalized and unnormalized embeddings to see which one gives better results.
+- You can find the results for Double-Hard Debias and other debiasing approaches on GloVe in [`GloVe_Evaluate.ipynb`]().
+- We also did some qualitative analysis by computing bias of some highly biased words before and after debiasing. You can find the analysis in [`Qualitative_Analysis.ipynb`]().

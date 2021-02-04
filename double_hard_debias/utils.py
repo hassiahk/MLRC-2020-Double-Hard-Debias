@@ -1,3 +1,4 @@
+import itertools
 import string
 from typing import Dict, List, Optional, Tuple
 
@@ -11,7 +12,22 @@ __all__ = [
     "limit_vocab",
     "cosine_similarity",
     "compute_bias_by_projection",
+    "perform_pca",
+    "remove_vector_component",
+    "get_embeddings",
 ]
+
+
+WEAT_WORDS = {
+'A': ['John', 'Paul', 'Mike', 'Kevin', 'Steve', 'Greg', 'Jeff', 'Bill'],
+'B': ['Amy', 'Joan', 'Lisa', 'Sarah', 'Diana', 'Kate', 'Ann', 'Donna'],
+'C': ['executive', 'management', 'professional', 'corporation', 'salary', 'office', 'business', 'career'],
+'D': ['home', 'parents', 'children', 'family', 'cousins', 'marriage', 'wedding', 'relatives'],
+'E': ['math', 'algebra', 'geometry', 'calculus', 'equations', 'computation', 'numbers', 'addition'],
+'F': ['poetry', 'art', 'dance', 'literature', 'novel', 'symphony', 'drama', 'sculpture'],
+'G': ['science', 'technology', 'physics', 'chemistry', 'einstein', 'nasa', 'experiment', 'astronomy'],
+'H': ['poetry', 'art', 'shakespeare', 'dance', 'literature', 'novel', 'symphony', 'drama'],
+}
 
 
 def load_glove_txt(path: str) -> Tuple[np.ndarray, Dict[str, int], List[str]]:
@@ -193,3 +209,107 @@ def get_embeddings(words, word_vec, word2idx):
     embeddings = [word_vec[word2idx[word]] for word in words]
 
     return embeddings
+
+
+def similarity(w1, w2, wv, w2i):
+    
+    i1 = w2i[w1]
+    i2 = w2i[w2]
+    vec1 = wv[i1, :]
+    vec2 = wv[i2, :]
+
+    return 1-scipy.spatial.distance.cosine(vec1, vec2)
+
+
+def association_diff(t, A, B, wv, w2i):
+    
+    mean_a = []
+    mean_b = []
+    
+    for a in A:
+        mean_a.append(similarity(t, a, wv, w2i))
+    for b in B:
+        mean_b.append(similarity(t, b, wv, w2i))
+        
+    mean_a = sum(mean_a)/float(len(mean_a))
+    mean_b = sum(mean_b)/float(len(mean_b))
+    
+    return mean_a - mean_b
+
+
+def effect_size(X, Y, A, B,  wv, w2i, vocab):
+    
+    assert(len(X) == len(Y))
+    assert(len(A) == len(B))
+    
+    norm_x = []
+    norm_y = []
+    
+    for x in X:
+        norm_x.append(association_diff(x, A, B, wv, w2i))
+    for y in Y:
+        norm_y.append(association_diff(y, A, B, wv, w2i))
+    
+    std = np.std(norm_x+norm_y, ddof=1)
+    norm_x = sum(norm_x) / float(len(norm_x))
+    norm_y = sum(norm_y) / float(len(norm_y))
+    
+    return (norm_x-norm_y)/std
+
+
+def s_word(w, A, B, wv, w2i, all_s_words):
+    
+    if w in all_s_words:
+        return all_s_words[w]
+    
+    mean_a = []
+    mean_b = []
+    
+    for a in A:
+        mean_a.append(similarity(w, a, wv, w2i))
+    for b in B:
+        mean_b.append(similarity(w, b, wv, w2i))
+        
+    mean_a = sum(mean_a)/float(len(mean_a))
+    mean_b = sum(mean_b)/float(len(mean_b))
+    
+    all_s_words[w] = mean_a - mean_b
+
+    return all_s_words[w]
+
+
+def s_group(X, Y, A, B,  wv, w2i, all_s_words):
+    
+    total = 0
+    for x in X:
+        total += s_word(x, A, B,  wv, w2i, all_s_words)
+    for y in Y:
+        total -= s_word(y, A, B,  wv, w2i, all_s_words)
+        
+    return total
+
+
+def p_value_exhaust(X, Y, A, B, wv, w2i):
+    
+    if len(X) > 10:
+        print('might take too long, use sampled version: p_value')
+        return
+    
+    assert(len(X) == len(Y))
+    
+    all_s_words = {}
+    s_orig = s_group(X, Y, A, B, wv, w2i, all_s_words)
+    
+    union = set(X+Y)
+    subset_size = int(len(union)/2)
+    
+    larger = 0
+    total = 0
+    for subset in set(itertools.combinations(union, subset_size)):
+        total += 1
+        Xi = list(set(subset))
+        Yi = list(union - set(subset))
+        if s_group(Xi, Yi, A, B, wv, w2i, all_s_words) > s_orig:
+            larger += 1
+    print('num of samples', total)
+    return larger/float(total)
