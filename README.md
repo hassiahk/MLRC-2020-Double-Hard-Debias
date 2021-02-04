@@ -30,11 +30,13 @@ python setup.py develop
 ```
 
 ### Data
-- `Word Embeddings`: You can find the authors debiased embeddings and ours [here](https://drive.google.com/drive/folders/1ZCF075LCwW6Lq2Y-G9LXhCYqudaXfPRC). Download and keep them in the [data](https://github.com/hassiahk/Double-Hard-Debias/tree/main/data) folder.
+Please download the below data and keep them in the [data](https://github.com/hassiahk/Double-Hard-Debias/tree/main/data) folder.
+- `Word Embeddings`: You can find the authors debiased embeddings and ours [here](https://drive.google.com/drive/folders/1ZCF075LCwW6Lq2Y-G9LXhCYqudaXfPRC).
 - `Special Word Lists`: You can find them in the [data](https://github.com/hassiahk/Double-Hard-Debias/tree/main/data) folder.
 - `Google Word Analogy` - Word Analogy dataset by Google. You can find it [here](https://drive.google.com/drive/folders/1V81RdUmueRaG9M_ZkBCpSEQwp0AldNE5).
 - `MSR Word Analogy` - MSR Word Analogy dataset. You can find it [here](https://drive.google.com/drive/folders/1bc1bdIRwc12q-rVLXBm78cTICxJNfT9i).
-- You can find all the external data used in the repo [here](https://drive.google.com/drive/folders/1ZCF075LCwW6Lq2Y-G9LXhCYqudaXfPRC).
+
+You can find all the external data used in our experiments [here](https://drive.google.com/drive/folders/1ZCF075LCwW6Lq2Y-G9LXhCYqudaXfPRC).
 
 ### Double-Hard Debias
 You can find the detailed step by step procedure to implement `Double-Hard Debias` in [`GloVe_Double_Hard_Debias.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Double_Hard_Debias.ipynb). (`PyPi` package coming soon)
