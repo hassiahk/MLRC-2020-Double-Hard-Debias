@@ -40,6 +40,6 @@ python setup.py develop
 You can find the detailed step by step procedure to implement `Double-Hard Debias` in [`GloVe_Double_Hard_Debias.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Double_Hard_Debias.ipynb). (`PyPi` package coming soon)
 
 ### Reproducibility Results
-- In [`Normalized_Unnormalized_GloVe_Evaluate.ipynb`](), we experimented with both normalized and unnormalized embeddings to see which one gives better results.
-- You can find the results for Double-Hard Debias and other debiasing approaches on GloVe in [`GloVe_Evaluate.ipynb`]().
-- We also did some qualitative analysis by computing bias of some highly biased words before and after debiasing. You can find the analysis in [`Qualitative_Analysis.ipynb`]().
+- In [`Normalized_Unnormalized_GloVe_Evaluate.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/Normalized_Unnormalized_GloVe_Evaluate.ipynb), we experimented with both normalized and unnormalized embeddings to see which one gives better results.
+- You can find the results for Double-Hard Debias and other debiasing approaches on `GloVe` in [`GloVe_Evaluate.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Evaluate.ipynb).
+- We also did some qualitative analysis by computing bias of some highly biased words before and after debiasing. You can find the analysis in [`Qualitative_Analysis.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/Qualitative_Analysis.ipynb).
