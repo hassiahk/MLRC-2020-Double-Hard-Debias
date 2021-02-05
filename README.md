@@ -39,9 +39,11 @@ Please download the below data and keep them in the [data](https://github.com/ha
 You can find all the external data used in our experiments [here](https://drive.google.com/drive/folders/1ZCF075LCwW6Lq2Y-G9LXhCYqudaXfPRC).
 
 ### Double-Hard Debias
-You can find the detailed step by step procedure to implement `Double-Hard Debias` in [`GloVe_Double_Hard_Debias.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Double_Hard_Debias.ipynb). (`PyPi` package coming soon)
+You can find the detailed procedure to implement `Double-Hard Debias` in [`GloVe_Double_Hard_Debias.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Double_Hard_Debias.ipynb). (`PyPi` package coming soon)
+
+We had to make minor changes as the authors code did not include the code to `Double-Hard Debias` the original `GloVe` embeddings and store them in a file.
 
 ### Reproducibility Results
 - In [`Normalized_Unnormalized_GloVe_Evaluate.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/Normalized_Unnormalized_GloVe_Evaluate.ipynb), we experimented with both normalized and unnormalized embeddings to see which one gives better results.
-- You can find the results for Double-Hard Debias and other debiasing approaches on `GloVe` in [`GloVe_Evaluate.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Evaluate.ipynb).
+- You can find the benchmarks results for Double-Hard Debias and other debiasing approaches on `GloVe` in [`GloVe_Evaluate.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/GloVe_Evaluate.ipynb).
 - We also did some qualitative analysis by computing bias of some highly biased words before and after debiasing. You can find the analysis in [`Qualitative_Analysis.ipynb`](https://github.com/hassiahk/Double-Hard-Debias/blob/main/notebooks/Qualitative_Analysis.ipynb).
