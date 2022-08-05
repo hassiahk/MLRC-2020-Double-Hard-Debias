@@ -166,15 +166,20 @@ def perform_pca(pairs, word_vec, word2idx) -> PCA:
 
     if isinstance(pairs[0], list):
         for word1, word2 in pairs:
-            if not (word1 in word2idx and word2 in word2idx):
+            if word1 not in word2idx or word2 not in word2idx:
                 continue
             center = (word_vec[word2idx[word1], :] + word_vec[word2idx[word2], :]) / 2
-            matrix.append(word_vec[word2idx[word1], :] - center)
-            matrix.append(word_vec[word2idx[word2], :] - center)
+            matrix.extend(
+                (
+                    word_vec[word2idx[word1], :] - center,
+                    word_vec[word2idx[word2], :] - center,
+                )
+            )
+
             cnt += 1
     else:
         for word in pairs:
-            if not word in word2idx:
+            if word not in word2idx:
                 continue
             matrix.append(word_vec[word2idx[word], :])
             cnt += 1
@@ -206,9 +211,7 @@ def get_embeddings(words, word_vec, word2idx):
     Get embeddings for the given words.
     """
 
-    embeddings = [word_vec[word2idx[word]] for word in words]
-
-    return embeddings
+    return [word_vec[word2idx[word]] for word in words]
 
 
 def similarity(w1, w2, wv, w2i):
@@ -222,87 +225,67 @@ def similarity(w1, w2, wv, w2i):
 
 
 def association_diff(t, A, B, wv, w2i):
-    
-    mean_a = []
-    mean_b = []
-    
-    for a in A:
-        mean_a.append(similarity(t, a, wv, w2i))
-    for b in B:
-        mean_b.append(similarity(t, b, wv, w2i))
-        
+
+    mean_a = [similarity(t, a, wv, w2i) for a in A]
+    mean_b = [similarity(t, b, wv, w2i) for b in B]
     mean_a = sum(mean_a)/float(len(mean_a))
     mean_b = sum(mean_b)/float(len(mean_b))
-    
+
     return mean_a - mean_b
 
 
 def effect_size(X, Y, A, B,  wv, w2i, vocab):
-    
+
     assert(len(X) == len(Y))
     assert(len(A) == len(B))
-    
-    norm_x = []
-    norm_y = []
-    
-    for x in X:
-        norm_x.append(association_diff(x, A, B, wv, w2i))
-    for y in Y:
-        norm_y.append(association_diff(y, A, B, wv, w2i))
-    
+
+    norm_x = [association_diff(x, A, B, wv, w2i) for x in X]
+    norm_y = [association_diff(y, A, B, wv, w2i) for y in Y]
     std = np.std(norm_x+norm_y, ddof=1)
     norm_x = sum(norm_x) / float(len(norm_x))
     norm_y = sum(norm_y) / float(len(norm_y))
-    
+
     return (norm_x-norm_y)/std
 
 
 def s_word(w, A, B, wv, w2i, all_s_words):
-    
+
     if w in all_s_words:
         return all_s_words[w]
-    
-    mean_a = []
-    mean_b = []
-    
-    for a in A:
-        mean_a.append(similarity(w, a, wv, w2i))
-    for b in B:
-        mean_b.append(similarity(w, b, wv, w2i))
-        
+
+    mean_a = [similarity(w, a, wv, w2i) for a in A]
+    mean_b = [similarity(w, b, wv, w2i) for b in B]
     mean_a = sum(mean_a)/float(len(mean_a))
     mean_b = sum(mean_b)/float(len(mean_b))
-    
+
     all_s_words[w] = mean_a - mean_b
 
     return all_s_words[w]
 
 
 def s_group(X, Y, A, B,  wv, w2i, all_s_words):
-    
-    total = 0
-    for x in X:
-        total += s_word(x, A, B,  wv, w2i, all_s_words)
+
+    total = sum(s_word(x, A, B,  wv, w2i, all_s_words) for x in X)
     for y in Y:
         total -= s_word(y, A, B,  wv, w2i, all_s_words)
-        
+
     return total
 
 
 def p_value_exhaust(X, Y, A, B, wv, w2i):
-    
+
     if len(X) > 10:
         print('might take too long, use sampled version: p_value')
         return
-    
+
     assert(len(X) == len(Y))
-    
+
     all_s_words = {}
     s_orig = s_group(X, Y, A, B, wv, w2i, all_s_words)
-    
+
     union = set(X+Y)
-    subset_size = int(len(union)/2)
-    
+    subset_size = len(union) // 2
+
     larger = 0
     total = 0
     for subset in set(itertools.combinations(union, subset_size)):
