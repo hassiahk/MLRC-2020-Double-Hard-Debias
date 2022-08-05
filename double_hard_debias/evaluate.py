@@ -53,17 +53,17 @@ def evaluate_categorization(w, X, y, method="kmeans", seed=None):
     new_x = []
     new_y = []
     exist_cnt = 0
-    
+
     for idx, word in enumerate(X.flatten()):
         if word in w :
             new_x.append(X[idx])
             new_y.append(y[idx])
             exist_cnt += 1
-    
-    print('exist {} in {}'.format(exist_cnt, len(X)))
+
+    print(f'exist {exist_cnt} in {len(X)}')
     X = np.array(new_x)
     y = np.array(new_y)
-    
+
     words = np.vstack([w.get(word, mean_vector) for word in X.flatten()])
     ids = np.random.RandomState(seed).choice(range(len(X)), len(X), replace=False)
 
@@ -71,7 +71,7 @@ def evaluate_categorization(w, X, y, method="kmeans", seed=None):
     # KMeans
     best_purity = 0
 
-    if method == "all" or method == "agglomerative":
+    if method in ["all", "agglomerative"]:
         best_purity = calculate_purity(y[ids], AgglomerativeClustering(n_clusters=len(set(y)),
                                                                        affinity="euclidean",
                                                                        linkage="ward").fit_predict(words[ids]))
@@ -84,7 +84,7 @@ def evaluate_categorization(w, X, y, method="kmeans", seed=None):
                 logger.debug("Purity={:.3f} using affinity={} linkage={}".format(purity, affinity, linkage))
                 best_purity = max(best_purity, purity)
 
-    if method == "all" or method == "kmeans":
+    if method in ["all", "kmeans"]:
         purity = calculate_purity(y[ids], KMeans(random_state=seed, n_init=10, n_clusters=len(set(y))).
                                   fit_predict(words[ids]))
         logger.debug("Purity={:.3f} using KMeans".format(purity))
@@ -103,13 +103,13 @@ def evaluate_concept_categorization(wv, w2i, vocab, method="all", seed=None):
     seed: int, default: None
       Seed passed to KMeans.
     """
-    wv_dict = dict()
+    wv_dict = {}
     for w in vocab:
         wv_dict[w] = wv[w2i[w], :]
-        
+
     if isinstance(wv_dict, dict):
         w = Embedding.from_dict(wv_dict)    
-    
+
     # Calculate results on categorization
     print("Calculating categorization benchmarks")
     categorization_tasks = {
@@ -125,10 +125,12 @@ def evaluate_concept_categorization(wv, w2i, vocab, method="all", seed=None):
 
     # Calculate results using helper function
     for name, data in iteritems(categorization_tasks):
-        print("Sample data from {}, num of samples: {} : \"{}\" is assigned class {}".format(
-            name, len(data.X), data.X[0], data.y[0]))
+        print(
+            f'Sample data from {name}, num of samples: {len(data.X)} : \"{data.X[0]}\" is assigned class {data.y[0]}'
+        )
+
         categorization_results[name] = evaluate_categorization(w, data.X, data.y, method=method, seed=seed)
-        print("Cluster purity on {} {}".format(name, categorization_results[name]))
+        print(f"Cluster purity on {name} {categorization_results[name]}")
 
 def evaluate_analogy_google(W, vocab):
     """Evaluate the trained w vectors on a variety of tasks"""
@@ -155,7 +157,7 @@ def evaluate_analogy_google(W, vocab):
     full_count = 0 # count all questions, including those with unknown words
 
     for i in range(len(filenames)):
-        with open('%s/%s' % (prefix, filenames[i]), 'r') as f:
+        with open(f'{prefix}/{filenames[i]}', 'r') as f:
             full_data = [line.rstrip().split(' ') for line in f]
             full_count += len(full_data)
             data = [list(map(str.lower, x)) for x in full_data if all(word.lower() in vocab for word in x)]
@@ -191,7 +193,7 @@ def evaluate_analogy_google(W, vocab):
             count_syn = count_syn + len(ind1)
             correct_syn = correct_syn + sum(val)
 
-        print("%s:" % filenames[i])
+        print(f"{filenames[i]}:")
         print('ACCURACY TOP1: %.2f%% (%d/%d)' %
             (np.mean(val) * 100, np.sum(val), len(val)))
 
@@ -214,10 +216,9 @@ def evaluate_analogy_msr(W, vocab, file_name='word_relationship.txt'):
     split_size = 100
 
     correct_tot = 0 # count correct questions
-    count_tot = 0 # count all questions
     full_count = 0 # count all questions, including those with unknown words
 
-    with open('%s/%s' % (prefix, file_name), 'r') as f:
+    with open(f'{prefix}/{file_name}', 'r') as f:
         full_data = []
         for line in f:
             tokens = line.rstrip().split(' ')
@@ -247,9 +248,8 @@ def evaluate_analogy_msr(W, vocab, file_name='word_relationship.txt'):
         predictions[subset] = np.argmax(dist, 0).flatten()
 
     val = (ind4 == predictions) # correct predictions
-    count_tot = count_tot + len(ind1)
-    correct_tot = correct_tot + sum(val)
-
+    count_tot = 0 + len(ind1)
+    correct_tot += sum(val)
 #     print("%s:" % filenames[i])
     print(len(val))
     print('ACCURACY TOP1-MSR: %.2f%% (%d/%d)' %
@@ -257,20 +257,20 @@ def evaluate_analogy_msr(W, vocab, file_name='word_relationship.txt'):
 
 def evaluate_analogy_semeval2012(w_dict):
     score = evaluate_on_semeval_2012_2(w_dict)['all']
-    print("Analogy prediction accuracy on {} {}".format("SemEval2012", score))
+    print(f"Analogy prediction accuracy on SemEval2012 {score}")
 
 def evaluate_word_analogy(wv, w2i, vocab):
     W_norm = np.zeros(wv.shape)
     d = (np.sum(wv ** 2, 1) ** (0.5))
     W_norm = (wv.T / d).T
-    
+
     evaluate_analogy_msr(W_norm, w2i)
     evaluate_analogy_google(W_norm, w2i)
-    
-    wv_dict = dict()
+
+    wv_dict = {}
     for w in vocab:
         wv_dict[w] = W_norm[w2i[w], :]
-        
+
     if isinstance(wv_dict, dict):
         w = Embedding.from_dict(wv_dict)
     evaluate_analogy_semeval2012(w)
